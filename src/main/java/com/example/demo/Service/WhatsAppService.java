@@ -1,5 +1,6 @@
 package com.example.demo.Service;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -58,34 +59,53 @@ public class WhatsAppService {
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setBearerAuth(apiToken);
 
-            Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("messaging_product", "whatsapp");
-            requestBody.put("to", request.getTo());
-            requestBody.put("type", "text");
+            System.out.println("TTTTTTTTTTTTTT" + request.getTo());
+            System.out.println("MMMMMMMMMMMMMM" + request.getMessage());
+            System.out.println("PPPPPPPPPPPPPP" + phoneNumberId);
 
-            Map<String, String> text = new HashMap<>();
-            text.put("body", request.getMessage());
-            requestBody.put("text", text);
+            Map<String, Object> requestBody = Map.of(
+                    "messaging_product", "whatsapp",
+                    "to", request.getTo(),
+                    "type", "TEXT",
+                    "text", Map.of("body", request.getMessage()));
 
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            System.out.println("RRRRRRRRRRRRR" + response);
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 Map<String, Object> responseBody = response.getBody();
-                String messageId = (String) ((Map) responseBody.get("messages")).get("id");
 
-                // Save to database
-                Message message = new Message(phoneNumberId, request.getTo(),
-                        request.getMessage(), MessageType.TEXT);
-                message.setWhatsappMessageId(messageId);
-                messageRepository.save(message);
+                // Fix: Handle messages as List instead of Map
+                String messageId = null;
+                Object messagesObj = responseBody.get("messages");
 
-                return new WhatsAppMessageResponse(true, messageId, "sent", null);
+                if (messagesObj instanceof List) {
+                    List<Map<String, Object>> messagesList = (List<Map<String, Object>>) messagesObj;
+                    if (!messagesList.isEmpty()) {
+                        messageId = (String) messagesList.get(0).get("id");
+                    }
+                }
+
+                System.out.println("MMMMMMMMMMMMMM" + response.getBody());
+
+                // Save to database only if we got a message ID
+                if (messageId != null) {
+                    Message message = new Message(phoneNumberId, request.getTo(),
+                            request.getMessage(), MessageType.TEXT);
+                    message.setWhatsappMessageId(messageId);
+                    messageRepository.save(message);
+
+                    return new WhatsAppMessageResponse(true, messageId, "sent", null);
+                } else {
+                    return new WhatsAppMessageResponse(false, null, "failed", "No message ID in response");
+                }
             } else {
                 return new WhatsAppMessageResponse(false, null, "failed", "API call failed");
             }
         } catch (Exception e) {
+            e.printStackTrace(); // Add this to see the full stack trace
             return new WhatsAppMessageResponse(false, null, "failed", e.getMessage());
         }
     }
@@ -94,7 +114,7 @@ public class WhatsAppService {
         try {
             Optional<MessageTemplate> templateOpt = templateRepository.findByName(request.getTemplateName());
             if (templateOpt.isEmpty()) {
-                return new WhatsAppMessageResponse(false, null, "failed", "Template not found");
+                return new WhatsAppMessageResponse(false, null, "failed3333", "Template not found");
             }
 
             MessageTemplate template = templateOpt.get();
@@ -120,10 +140,11 @@ public class WhatsAppService {
 
                 return new WhatsAppMessageResponse(true, messageId, "sent", null);
             } else {
-                return new WhatsAppMessageResponse(false, null, "failed", "API call failed");
+                return new WhatsAppMessageResponse(false, null, "failed4343434", "API call failed");
             }
+
         } catch (Exception e) {
-            return new WhatsAppMessageResponse(false, null, "failed", e.getMessage());
+            return new WhatsAppMessageResponse(false, null, "failed333333", e.getMessage());
         }
     }
 
@@ -136,11 +157,19 @@ public class WhatsAppService {
         Map<String, Object> templateMap = new HashMap<>();
         templateMap.put("name", template.getWhatsappTemplateId());
 
+        // Add language to template if provided
+        if (request.getLanguage() != null) {
+            Map<String, String> languageMap = new HashMap<>();
+            languageMap.put("code", request.getLanguage().getCode());
+            templateMap.put("language", languageMap);
+        }
+
         if (request.getTemplateParameters() != null && !request.getTemplateParameters().isEmpty()) {
             Map<String, Object> parameters = new HashMap<>();
             List<Map<String, Object>> components = new ArrayList<>();
 
             request.getTemplateParameters().forEach((key, value) -> {
+              
                 Map<String, Object> param = new HashMap<>();
                 param.put("type", "text");
                 param.put("text", value);
@@ -149,10 +178,37 @@ public class WhatsAppService {
 
             templateMap.put("components", components);
         }
-
+        System.out.println(request.getTemplateParameters());
         requestBody.put("template", templateMap);
         return requestBody;
     }
+
+    // private Map<String, Object> buildTemplateRequestBody(WhatsAppMessageRequest
+    // request, MessageTemplate template) {
+    // Map<String, Object> requestBody = new HashMap<>();
+    // requestBody.put("messaging_product", "whatsapp");
+    // requestBody.put("to", request.getTo());
+    // requestBody.put("type", "TEMPLATE");
+
+    // Map<String, Object> templateMap = new HashMap<>();
+    // templateMap.put("name", template.getWhatsappTemplateId());
+
+    // if (request.getTemplateParameters() != null &&
+    // !request.getTemplateParameters().isEmpty()) {
+    // Map<String, Object> parameters = new HashMap<>();
+    // List<Map<String, Object>> components = new ArrayList<>();
+
+    // request.getTemplateParameters().forEach((key, value) -> {
+    // Map<String, Object> param = new HashMap<>();
+    // param.put("type", "text");
+    // param.put("text", value);
+    // components.add(Map.of("type", "body", "parameters", List.of(param)));
+    // });
+    // templateMap.put("components", components);
+    // }
+    // requestBody.put("template", templateMap);
+    // return requestBody;
+    // }
 
     public void handleWebhook(WebhookRequest webhookRequest) {
         if (webhookRequest.getEntry() != null) {

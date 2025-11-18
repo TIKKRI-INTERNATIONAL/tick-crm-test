@@ -60,6 +60,12 @@
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20250517</version>
+</dependency>
+
 		<dependency>
     <groupId>org.apache.camel.springboot</groupId>
     <artifactId>camel-whatsapp-starter</artifactId>

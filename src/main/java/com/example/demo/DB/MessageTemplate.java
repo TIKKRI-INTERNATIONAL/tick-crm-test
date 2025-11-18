@@ -19,98 +19,82 @@ public class MessageTemplate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-   
 
     @Column(nullable = false, unique = true)
     private String name;
-    
-  
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
- 
 
-        @Enumerated(EnumType.STRING)
-        private TemplateCategory category;
-        
-    
+    @Enumerated(EnumType.STRING)
+    private TemplateCategory category;
 
-        @Column(name = "whatsapp_template_id")
-        private String whatsappTemplateId;
-        
-     
+    @Column(name = "whatsapp_template_id")
+    private String whatsappTemplateId;
 
-        @Column(name = "is_active")
-        private Boolean isActive = true;
-        
-      
+    @Column(name = "is_active")
+    private Boolean isActive = true;
 
-        @CreationTimestamp
-        @Column(name = "created_at")
-        private LocalDateTime createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
-        public Long getId() {
-            return id;
-        }
-    
-        public void setId(Long id) {
-            this.id = id;
-        }
+    public Long getId() {
+        return id;
+    }
 
-        public String getName() {
-            return name;
-        }
-    
-        public void setName(String name) {
-            this.name = name;
-        }
-           
-        public String getContent() {
-            return content;
-        }
-    
-        public void setContent(String content) {
-            this.content = content;
-        }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-        public TemplateCategory getCategory() {
-            return category;
-        }
+    public String getName() {
+        return name;
+    }
 
-        public void setCategory(TemplateCategory category) {
-            this.category = category;
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    public String getContent() {
+        return content;
+    }
 
-        public String getWhatsappTemplateId() {
-            return whatsappTemplateId;
-        }
+    public void setContent(String content) {
+        this.content = content;
+    }
 
-        public void setWhatsappTemplateId(String whatsappTemplateId) {
-            this.whatsappTemplateId = whatsappTemplateId;
-        }
+    public TemplateCategory getCategory() {
+        return category;
+    }
 
-        public Boolean getIsActive() {
-            return isActive;
-        }
+    public void setCategory(TemplateCategory category) {
+        this.category = category;
+    }
 
-        public void setIsActive(Boolean isActive) {
-            this.isActive = isActive;
-        }
-        
+    public String getWhatsappTemplateId() {
+        return whatsappTemplateId;
+    }
 
-        public LocalDateTime getCreatedAt() {
-            return createdAt;
-        }
+    public void setWhatsappTemplateId(String whatsappTemplateId) {
+        this.whatsappTemplateId = whatsappTemplateId;
+    }
 
-        public void setCreatedAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-        }
+    public Boolean getIsActive() {
+        return isActive;
+    }
 
-    
-    // Constructors, Getters, Setters
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
 }
 
-// Enums
 
