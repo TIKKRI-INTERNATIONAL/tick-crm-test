@@ -1,6 +1,7 @@
 package com.example.demo.DB;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -38,6 +39,57 @@ public class MessageTemplate {
     @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private String language;
+
+    @Enumerated(EnumType.STRING)
+    private TemplateStatus status;
+
+    @Column(name = "whatsapp_business_account_id")
+    private String whatsappBusinessAccountId;
+
+    public MessageTemplate(Long id, String name, String content, TemplateCategory category, String whatsappTemplateId,
+            Boolean isActive, LocalDateTime createdAt, String language, TemplateStatus status,
+            String whatsappBusinessAccountId) {
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        this.category = category;
+        this.whatsappTemplateId = whatsappTemplateId;
+        this.isActive = isActive;
+        this.createdAt = createdAt;
+        this.language = language;
+        this.status = status;
+        this.whatsappBusinessAccountId = whatsappBusinessAccountId;
+    }
+
+    public MessageTemplate() {
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public TemplateStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TemplateStatus status) {
+        this.status = status;
+    }
+
+    public String getWhatsappBusinessAccountId() {
+        return whatsappBusinessAccountId;
+    }
+
+    public void setWhatsappBusinessAccountId(String whatsappBusinessAccountId) {
+        this.whatsappBusinessAccountId = whatsappBusinessAccountId;
+    }
 
     public Long getId() {
         return id;
@@ -96,5 +148,3 @@ public class MessageTemplate {
     }
 
 }
-
-
