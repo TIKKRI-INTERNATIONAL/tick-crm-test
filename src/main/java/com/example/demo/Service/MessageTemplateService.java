@@ -39,6 +39,7 @@ public class MessageTemplateService {
     }
 
     public MessageTemplate createTemplate(CreateTemplateRequest request) {
+        System.out.println("Creating template: " + request.getName());
         // Check if template with same name exists for this account
         templateRepository.findByNameAndWhatsappBusinessAccountId(
                 request.getName(), request.getWhatsappBusinessAccountId())

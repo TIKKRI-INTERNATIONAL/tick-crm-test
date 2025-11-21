@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.http.*;
 
 @Service
 public class WhatsAppService {
@@ -471,4 +474,89 @@ public class WhatsAppService {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getMessagesByPhoneNumber'");
     }
+
+
+
+
+        public boolean sendOTP(String toPhoneNumber, String otpCode) {
+        try {
+            String url = apiUrl + "/" + phoneNumberId + "/messages";
+
+            // Prepare headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiToken);
+
+            // Prepare message template
+            Map<String, Object> message = new HashMap<>();
+            message.put("messaging_product", "whatsapp");
+            message.put("to", toPhoneNumber);
+            message.put("type", "template");
+
+            Map<String, Object> template = new HashMap<>();
+            template.put("name", "otp_verification"); // Your template name
+
+            Map<String, Object> language = new HashMap<>();
+            language.put("code", "en");
+
+            template.put("language", language);
+
+            Map<String, Object>[] components = new Map[1];
+            components[0] = new HashMap<>();
+            components[0].put("type", "body");
+
+            Map<String, Object>[] parameters = new Map[1];
+            parameters[0] = new HashMap<>();
+            parameters[0].put("type", "text");
+            parameters[0].put("text", otpCode);
+
+            components[0].put("parameters", parameters);
+            template.put("components", components);
+
+            message.put("template", template);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(message, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                url, HttpMethod.POST, request, String.class);
+
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // Alternative method for simple text message (if template not available)
+    public boolean sendSimpleOTP(String toPhoneNumber, String otpCode) {
+        try {
+            String url = apiUrl + "/" + phoneNumberId + "/messages";
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.setBearerAuth(apiToken);
+
+            Map<String, Object> message = new HashMap<>();
+            message.put("messaging_product", "whatsapp");
+            message.put("to", toPhoneNumber);
+            message.put("type", "text");
+
+            Map<String, Object> text = new HashMap<>();
+            text.put("body", "Your OTP code is: " + otpCode + ". This code will expire in 5 minutes.");
+            message.put("text", text);
+
+            HttpEntity<Map<String, Object>> request = new HttpEntity<>(message, headers);
+
+            ResponseEntity<String> response = restTemplate.exchange(
+                url, HttpMethod.POST, request, String.class);
+
+            return response.getStatusCode() == HttpStatus.OK;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+
 }

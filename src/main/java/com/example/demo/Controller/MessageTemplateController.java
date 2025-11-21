@@ -39,7 +39,7 @@ public class MessageTemplateController {
         this.templateService = templateService;
     }
     
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<MessageTemplate> createTemplate(
             @Valid @RequestBody CreateTemplateRequest request) {
         MessageTemplate template = templateService.createTemplate(request);

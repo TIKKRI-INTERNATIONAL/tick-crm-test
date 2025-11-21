@@ -26,10 +26,10 @@ public class WhatsAppGraphApiService {
 
     public Mono<String> createMessageTemplate(String whatsappBusinessAccountId,
             Map<String, Object> templateData) {
-        String url = "/104012505768129/message_templates";
+        String url = "/" + whatsappBusinessAccountId + "/message_templates";
 
         return webClient.post()
-                .uri(url, whatsappBusinessAccountId)
+                .uri(url)
                 .header("Authorization", "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(templateData)
