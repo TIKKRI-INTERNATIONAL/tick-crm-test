@@ -1,6 +1,7 @@
 package com.example.demo.Service;
 
-
+import com.example.demo.Config.Language;
+import com.example.demo.Config.WhatsAppMessageRequest;
 import com.example.demo.DB.OTP;
 import com.example.demo.Repository.OTPRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,9 +39,10 @@ public class OTPService {
 
     public boolean sendOTP(String phoneNumber) {
         // Invalidate previous OTPs
-        // Optional<OTP> phoneNumbercheck = otpRepository.findByPhoneNumber(phoneNumber);
+        // Optional<OTP> phoneNumbercheck =
+        // otpRepository.findByPhoneNumber(phoneNumber);
         // if (!phoneNumbercheck.isEmpty()) {
-            otpRepository.invalidatePreviousOTPs(phoneNumber);
+        otpRepository.invalidatePreviousOTPs(phoneNumber);
         // }
 
         // Generate new OTP
@@ -51,8 +53,18 @@ public class OTPService {
         OTP otp = new OTP(phoneNumber, otpCode, expiresAt);
         otpRepository.save(otp);
 
+        Language language = new Language();
+        language.setCode("en");
+
+        WhatsAppMessageRequest request = new WhatsAppMessageRequest();
+        request.setTo(phoneNumber);
+        request.setTemplateName("otp_verification");
+        request.setOtpCode(otpCode);
+        request.setLanguage(language);
         // Send OTP via WhatsApp
-        return whatsAppService.sendSimpleOTP(phoneNumber, otpCode);
+        // whatsAppService.sendTemplateMessageOTP(request);
+        return whatsAppService.sendOTP(phoneNumber, otpCode);
+        // return whatsAppService.sendSimpleOTP(phoneNumber, otpCode);
     }
 
     public boolean verifyOTP(String phoneNumber, String code) {

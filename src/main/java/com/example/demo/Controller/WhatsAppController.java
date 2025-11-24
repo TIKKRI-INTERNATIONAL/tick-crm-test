@@ -17,6 +17,8 @@ import com.example.demo.DB.Message;
 import com.example.demo.DB.MessageStatus;
 import com.example.demo.Service.WhatsAppService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 // WhatsAppController.java
 @RestController
 @RequestMapping("/api/whatsapp")
@@ -31,11 +33,26 @@ public class WhatsAppController {
         return ResponseEntity.ok(response);
     }
     
-    @PostMapping("/send-template")
-    public ResponseEntity<WhatsAppMessageResponse> sendTemplateMessage(@RequestBody WhatsAppMessageRequest request) {
-        WhatsAppMessageResponse response = whatsAppService.sendTemplateMessage(request);
-        return ResponseEntity.ok(response);
-    }
+    // @PostMapping("/send-template")
+    // public ResponseEntity<WhatsAppMessageResponse> sendTemplateMessage(@RequestBody WhatsAppMessageRequest request) {
+    //     WhatsAppMessageResponse response = whatsAppService.sendTemplateMessage(request);
+    //     return ResponseEntity.ok(response);
+    // }
+
+@PostMapping("/send-template")
+public ResponseEntity<WhatsAppMessageResponse> sendTemplateMessage(
+        @RequestBody WhatsAppMessageRequest request,
+        HttpServletRequest httpRequest) {
+    
+    // Log the request for debugging
+    System.out.println("Received request: " + request.toString());
+
+    // String response ="ok"
+    //   WhatsAppMessageResponse response = new WhatsAppMessageResponse(false, "ok", "mock-message-id-12345", null);
+    //   response.setMessageId("mock-message-id-12345");
+    WhatsAppMessageResponse response = whatsAppService.sendTemplateMessage(request);
+    return ResponseEntity.ok(response);
+}
     
     @GetMapping("/messages")
     public ResponseEntity<List<Message>> getMessages(

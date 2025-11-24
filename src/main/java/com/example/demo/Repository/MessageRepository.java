@@ -15,6 +15,8 @@ import com.example.demo.DB.MessageStatus;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findByFromNumber(String fromNumber);
+    // List<Message> findByPhoneNumber(String phoneNumber);
+
     List<Message> findByToNumber(String toNumber);
     Optional<Message> findByWhatsappMessageId(String whatsappMessageId);
     List<Message> findByStatus(MessageStatus status);

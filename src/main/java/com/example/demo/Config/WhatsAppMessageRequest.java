@@ -6,19 +6,40 @@ import com.example.demo.DB.MessageType;
 public class WhatsAppMessageRequest {
     private String to;
     private String message;
+    private String otpCode;
+
     private Language language; // Changed from String to Language object
     private MessageType type;
     private String templateName;
     private Map<String, String> templateParameters;
+    private Map<String, String> buttonParameters;
 
-    public WhatsAppMessageRequest(String to, String message, Language language, MessageType type, String templateName,
-            Map<String, String> templateParameters) {
+    public WhatsAppMessageRequest(String to, String message, String otpCode, Language language, MessageType type,
+            String templateName, Map<String, String> templateParameters, Map<String, String> buttonParameters) {
         this.to = to;
         this.message = message;
+        this.otpCode = otpCode;
         this.language = language;
         this.type = type;
         this.templateName = templateName;
         this.templateParameters = templateParameters;
+        this.buttonParameters = buttonParameters;
+    }
+
+    public String getOtpCode() {
+        return otpCode;
+    }
+
+    public void setOtpCode(String otpCode) {
+        this.otpCode = otpCode;
+    }
+
+    public Map<String, String> getButtonParameters() {
+        return buttonParameters;
+    }
+
+    public void setButtonParameters(Map<String, String> buttonParameters) {
+        this.buttonParameters = buttonParameters;
     }
 
     public WhatsAppMessageRequest() {
@@ -72,4 +93,5 @@ public class WhatsAppMessageRequest {
     public void setTemplateParameters(Map<String, String> templateParameters) {
         this.templateParameters = templateParameters;
     }
+
 }

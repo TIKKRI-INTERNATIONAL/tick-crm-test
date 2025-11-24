@@ -14,7 +14,7 @@ import com.example.demo.Service.WhatsAppService;
 
 // WebhookController.java
 @RestController
-@RequestMapping("/webhook")
+@RequestMapping("/api/whatsappwebhook")
 public class WebhookController {
     
     @Autowired
@@ -34,7 +34,8 @@ public class WebhookController {
         }
     }
     
-    @PostMapping
+    // @PostMapping
+    @PostMapping("/webhook")
     public ResponseEntity<String> handleWebhook(@RequestBody WebhookRequest webhookRequest) {
         whatsAppService.handleWebhook(webhookRequest);
         return ResponseEntity.ok("EVENT_RECEIVED");
